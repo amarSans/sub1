@@ -4,22 +4,20 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewModelScope
 import com.example.submisionintermediate.data.UserRepository
 import com.example.submisionintermediate.databinding.ActivityLoginBinding
 import com.example.submisionintermediate.di.Injection
 import com.example.submisionintermediate.view.ViewModelFactory
+import com.example.submisionintermediate.view.daftar.SignupActivity
 import com.example.submisionintermediate.view.main.MainActivity
-import com.example.submisionintermediate.view.main.MainViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -38,7 +36,8 @@ class LoginActivity : AppCompatActivity() {
         playAnimation()
     }
     private fun setupAction() {
-        binding.loginButton.setOnClickListener {
+        binding.btnDaftar.setOnClickListener { startActivity(Intent(this, SignupActivity::class.java)) }
+        binding.btnLogin.setOnClickListener {
             showLoading(true)
             val email=binding.emailEditText.text.toString()
             val password=binding.passwordEditText.text.toString()
@@ -62,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.progressBar1.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
     private fun setupView() {
         @Suppress("DEPRECATION")
@@ -77,25 +76,28 @@ class LoginActivity : AppCompatActivity() {
         supportActionBar?.hide()
     }
     private fun playAnimation() {
+        val nilai:Long=500
         ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f).apply {
             duration = 6000
             repeatCount = ObjectAnimator.INFINITE
             repeatMode = ObjectAnimator.REVERSE
         }.start()
 
-        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(100)
+        val title = ObjectAnimator.ofFloat(binding.titleTextView, View.ALPHA, 1f).setDuration(nilai)
         val message =
-            ObjectAnimator.ofFloat(binding.messageTextView, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.messageTextView, View.ALPHA, 1f).setDuration(nilai)
         val emailTextView =
-            ObjectAnimator.ofFloat(binding.emailTextView, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.emailTextView, View.ALPHA, 1f).setDuration(nilai)
         val emailEditTextLayout =
-            ObjectAnimator.ofFloat(binding.emailEditTextLayout, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.emailEditTextLayout, View.ALPHA, 1f).setDuration(nilai)
         val passwordTextView =
-            ObjectAnimator.ofFloat(binding.passwordTextView, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.passwordTextView, View.ALPHA, 1f).setDuration(nilai)
         val passwordEditTextLayout =
-            ObjectAnimator.ofFloat(binding.passwordEditTextLayout, View.ALPHA, 1f).setDuration(100)
-        val login = ObjectAnimator.ofFloat(binding.loginButton, View.ALPHA, 1f).setDuration(100)
+            ObjectAnimator.ofFloat(binding.passwordEditTextLayout, View.ALPHA, 1f).setDuration(nilai)
+        val login = ObjectAnimator.ofFloat(binding.btnLogin, View.ALPHA, 1f).setDuration(nilai)
+        val daftar = ObjectAnimator.ofFloat(binding.btnDaftar, View.ALPHA, 1f).setDuration(nilai)
 
+        val button=AnimatorSet().apply { playTogether(login,daftar) }
         AnimatorSet().apply {
             playSequentially(
                 title,
@@ -104,9 +106,9 @@ class LoginActivity : AppCompatActivity() {
                 emailEditTextLayout,
                 passwordTextView,
                 passwordEditTextLayout,
-                login
+                button
             )
-            startDelay = 100
+            startDelay = nilai
         }.start()
 
     }

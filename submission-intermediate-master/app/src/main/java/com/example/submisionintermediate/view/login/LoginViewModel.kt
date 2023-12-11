@@ -1,5 +1,6 @@
 package com.example.submisionintermediate.view.login
 
+import android.app.appsearch.AppSearchSession
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,7 +16,6 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
             userRepository.simpanPosisi(kode)
         }
     }
-
 
     suspend fun login(
         email: String,

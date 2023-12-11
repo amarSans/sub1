@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.submisionintermediate.data.UserRepository
 import com.example.submisionintermediate.di.Injection
+import com.example.submisionintermediate.view.addStory.AddStoryViewModel
 import com.example.submisionintermediate.view.daftar.SignupViewModel
 import com.example.submisionintermediate.view.login.LoginViewModel
 import com.example.submisionintermediate.view.main.MainViewModel
+import com.example.submisionintermediate.view.maps.mapViewModel
 
 class ViewModelFactory(private val repository: UserRepository) : ViewModelProvider.NewInstanceFactory() {
 
@@ -23,6 +25,15 @@ class ViewModelFactory(private val repository: UserRepository) : ViewModelProvid
             modelClass.isAssignableFrom(SignupViewModel::class.java)->{
                 SignupViewModel(repository) as T
             }
+            modelClass.isAssignableFrom(AddStoryViewModel::class.java)->{
+                AddStoryViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(mapViewModel::class.java)->{
+                mapViewModel(repository) as T
+            }
+
+
+
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }

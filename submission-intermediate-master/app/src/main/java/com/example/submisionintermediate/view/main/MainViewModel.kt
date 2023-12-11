@@ -4,30 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.submisionintermediate.data.UserRepository
+import com.example.submisionintermediate.data.database.storyItem
 import com.example.submisionintermediate.data.response.ListStoryItem
-import com.example.submisionintermediate.data.retrofit.ApiConfig
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel constructor(private val userRepository: UserRepository) : ViewModel() {
+class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
+
     private val _userSession = MutableLiveData<String?>()
-    val userSession:LiveData<String?> get() = _userSession
-    fun getSession(){
-        viewModelScope.launch {
-            userRepository.getSesion().collect{
-                session-> _userSession.value=session
-            }
-        }
-    }
-    fun logout() {
-        viewModelScope.launch {
-            userRepository.logout()
-        }
-    }
-    private val _storyList = MutableLiveData<List<ListStoryItem>?>()
-    val storyList: MutableLiveData<List<ListStoryItem>?>
-        get() = _storyList
+    val userSession: LiveData<String?>
+        get() = _userSession
+
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean>
@@ -38,27 +28,38 @@ class MainViewModel constructor(private val userRepository: UserRepository) : Vi
         get() = _error
 
 
+    init {
+        getSession()
+    }
 
-    fun getStories() {
-        _isLoading.value = true
 
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                userRepository.getSesion().collect { token ->
-                    if (!token.isNullOrBlank()) {
-                        val response = userRepository.apiService.getStory("Bearer $token")
-                        _storyList.postValue(response.listStory as List<ListStoryItem>?)
-                        _isLoading.postValue(false)
-                    } else {
-                        _error.postValue("Token is null or empty.")
-                        _isLoading.postValue(false)
-                    }
-                }
-            } catch (e: Exception) {
-                _error.postValue("Error fetching stories: ${e.message}")
-                _isLoading.postValue(false)
+    fun getSession() {
+        viewModelScope.launch {
+            userRepository.getToken().collect { session ->
+                _userSession.value = session
             }
         }
     }
 
+
+    fun logout() {
+        viewModelScope.launch {
+            userRepository.logout()
+        }
+    }
+
+
+    private val _storyPagingData = MutableLiveData<PagingData<ListStoryItem>>()
+    val storyPagingData: LiveData<PagingData<ListStoryItem>> get() = _storyPagingData
+
+    @ExperimentalPagingApi
+    fun getPagingStories(token: String): LiveData<PagingData<storyItem>> {
+        return userRepository.getStoryPagingData(token).cachedIn(viewModelScope)
+    }
+
 }
+
+
+
+
+

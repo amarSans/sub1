@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.addStory.tambahStory">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/tv_add_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="20dp"
+                android:text="@string/cerita"
+                android:textSize="23sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/previewGambar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/download"
+                app:layout_constraintEnd_toEndOf="@+id/tv_add_name"
+                app:layout_constraintStart_toStartOf="@+id/tv_add_name"
+                app:layout_constraintTop_toBottomOf="@+id/tv_add_name" />
+
+            <Button
+                android:id="@+id/btn_add_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/camera"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toStartOf="@id/btn_add_Gallery"
+                app:layout_constraintStart_toStartOf="@id/previewGambar"
+                app:layout_constraintTop_toBottomOf="@id/previewGambar" />
+
+            <Button
+                android:id="@+id/btn_add_Gallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/Gallery"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="@id/previewGambar"
+                app:layout_constraintStart_toEndOf="@id/btn_add_camera"
+                app:layout_constraintTop_toBottomOf="@id/previewGambar" />
+
+
+            <EditText
+                android:id="@+id/edt_descrip"
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_marginTop="20dp"
+                android:autofillHints="Description"
+                android:background="@drawable/border_description"
+                android:gravity="top|left"
+                android:hint="@string/description"
+                android:inputType="textMultiLine"
+                android:maxHeight="180dp"
+                android:maxLines="8"
+                android:padding="15dp"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@id/previewGambar"
+                app:layout_constraintStart_toStartOf="@id/previewGambar"
+                app:layout_constraintTop_toBottomOf="@+id/btn_add_camera" />
+
+            <Button
+                android:id="@+id/btn_kirim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="@string/kirim"
+                app:layout_constraintEnd_toEndOf="@id/edt_descrip"
+                app:layout_constraintStart_toStartOf="@+id/edt_descrip"
+                app:layout_constraintTop_toBottomOf="@+id/edt_descrip"
+
+                />
+            <ProgressBar
+                android:id="@+id/progressIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</ScrollView>

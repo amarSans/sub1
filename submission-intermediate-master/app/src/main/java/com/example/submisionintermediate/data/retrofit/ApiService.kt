@@ -2,12 +2,10 @@ package com.example.submisionintermediate.data.retrofit
 
 import com.example.submisionintermediate.data.response.AddStoryResponse
 import com.example.submisionintermediate.data.response.AllStoryResponse
-import com.example.submisionintermediate.data.response.DetailStoryResponse
 import com.example.submisionintermediate.data.response.LoginResponse
 import com.example.submisionintermediate.data.response.RegisterResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiService {
@@ -27,25 +25,21 @@ interface ApiService {
     ):LoginResponse
 
     @GET("stories")
-    suspend fun getStory(
+    suspend fun getStoryAll(
         @Header("Authorization") token: String,
+        @Query("location") location : Int = 1,
         @Query("page") page: Int? = null,
-        @Query("size") size: Int? = null,
-        @Query("location") location: Int? = null
+        @Query("size") size: Int? = null
     ): AllStoryResponse
+
+
 
     @Multipart
     @POST("stories")
     suspend fun addStory(
-        @Header("Authorization") token:String,
-        @Part file:MultipartBody.Part,
+        @Header("Authorization") token: String,
+        @Part file: MultipartBody.Part,
         @Part("description") description:RequestBody
     ):AddStoryResponse
-
-    @GET("stories/{id}")
-    suspend fun detailStory(
-        @Header("Authorization") token: String,
-        @Path("id") storyId:String
-    ):DetailStoryResponse
 
 }
