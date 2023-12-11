@@ -1,6 +1,5 @@
 package com.example.submisionintermediate.view.main
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.ExperimentalPagingApi
@@ -8,7 +7,6 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.recyclerview.widget.ListUpdateCallback
-import com.example.submisionintermediate.DataDummy
 import com.example.submisionintermediate.DataDummy.generateDummyStoryItems
 import com.example.submisionintermediate.MainDispatcherRule
 import com.example.submisionintermediate.adapter.StoryAdapter
@@ -19,12 +17,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 
@@ -39,22 +35,20 @@ class MainViewModelTest {
     val mainDispatcherRules=MainDispatcherRule()
 
     @Mock
-    private lateinit var mainViewModel:MainViewModel
+    private lateinit var userRepository: UserRepository
 
-    @Before
-    fun setup(){
-        mainViewModel=Mockito.mock(MainViewModel::class.java)
-    }
+
+    private val token="token"
     @OptIn(ExperimentalPagingApi::class)
     @Test
     fun `when Get Story Should Not Null and Return Data`() = runTest{
         val dummyStory=generateDummyStoryItems()
-        val data = StoryPagingSource.snapshot(dummyStory)
-        val expectedStory=MutableLiveData<PagingData<storyItem>>()
-        val token="this token"
-        expectedStory.value=data
-        `when`(mainViewModel.getPagingStories(token)).thenReturn(expectedStory)
+        val data :PagingData<storyItem> = StoryPagingSource.snapshot(dummyStory)
 
+        val expectedStory=MutableLiveData<PagingData<storyItem>>()
+        expectedStory.value=data
+        `when`(userRepository.getStoryPagingData(token)).thenReturn(expectedStory)
+        val mainViewModel=MainViewModel(userRepository)
         val actualStory:PagingData<storyItem> = mainViewModel.getPagingStories(token).getOrAwaitValue()
 
         val differ=AsyncPagingDataDiffer(
@@ -63,22 +57,20 @@ class MainViewModelTest {
             workerDispatcher = Dispatchers.Main,
         )
         differ.submitData(actualStory)
-
         Assert.assertNotNull(differ.snapshot())
-        Assert.assertEquals(dummyStory.size,differ.snapshot())
-        Assert.assertEquals(dummyStory[0],differ.snapshot()[0]?.name)
+        Assert.assertEquals(dummyStory.size,differ.snapshot().size)
+
     }
     @OptIn(ExperimentalPagingApi::class)
     @Test
     fun `when Get Story Empty Should Return No Data`()= runTest {
-        val dummyStory=generateDummyStoryItems()
-        val data = StoryPagingSource.snapshot(dummyStory)
+        val data :PagingData<storyItem> = StoryPagingSource.snapshot(listOf())
         val expectedStory=MutableLiveData<PagingData<storyItem>>()
-        val token="this token"
         expectedStory.value=data
-        `when`(mainViewModel.getPagingStories(token)).thenReturn(expectedStory)
-
+        `when`(userRepository.getStoryPagingData(token)).thenReturn(expectedStory)
+        val mainViewModel=MainViewModel(userRepository)
         val actualStory:PagingData<storyItem> = mainViewModel.getPagingStories(token).getOrAwaitValue()
+
 
         val differ=AsyncPagingDataDiffer(
             diffCallback = StoryAdapter.DIFF_CALLBACK,
@@ -86,30 +78,35 @@ class MainViewModelTest {
             workerDispatcher = Dispatchers.Main,
         )
         differ.submitData(actualStory)
-
+        Assert.assertNotNull(differ.snapshot())
         Assert.assertTrue(differ.snapshot().isEmpty())
-
+        print(differ.snapshot().size)
     }
-    class StoryPagingSource:PagingSource<Int,LiveData<List<storyItem>>>(){
-        companion object{
-            fun snapshot(item: List<storyItem>):PagingData<storyItem>{
-                return PagingData.from(item)
-            }
-        }
-        override fun getRefreshKey(state: PagingState<Int, LiveData<List<storyItem>>>): Int? {
-            return 0
-        }
 
-        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, LiveData<List<storyItem>>> {
-            return LoadResult.Page(emptyList(),0,1)
+}
+class StoryPagingSource :PagingSource<Int,List<storyItem>>(){
+    companion object{
+        fun snapshot(item: List<storyItem>):PagingData<storyItem>{
+            return PagingData.from(item)
         }
-
     }
-    val noopListUpdateCallback=object :ListUpdateCallback{
-        override fun onInserted(position: Int, count: Int) {}
-        override fun onRemoved(position: Int, count: Int) {}
-        override fun onMoved(fromPosition: Int, toPosition: Int) {}
-        override fun onChanged(position: Int, count: Int, payload: Any?) {}
-
+    override fun getRefreshKey(state: PagingState<Int,List<storyItem>>): Int {
+        return 0
     }
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, List<storyItem>> {
+        try {
+            return LoadResult.Page(emptyList(), 0, 1)
+        }catch (e:Exception){
+            return LoadResult.Error(e)
+        }
+    }
+
+}
+private val noopListUpdateCallback=object :ListUpdateCallback{
+    override fun onInserted(position: Int, count: Int) {}
+    override fun onRemoved(position: Int, count: Int) {}
+    override fun onMoved(fromPosition: Int, toPosition: Int) {}
+    override fun onChanged(position: Int, count: Int, payload: Any?) {}
+
 }

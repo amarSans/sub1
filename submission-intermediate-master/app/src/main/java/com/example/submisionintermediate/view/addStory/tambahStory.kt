@@ -52,16 +52,16 @@ class tambahStory : AppCompatActivity() {
             uploadImage()
             lifecycleScope.launch {
                 viewModel.tambahStoryResult.collect { result ->
-                    showLoading(true)
                     when (result) {
                         is StoryResult.Success -> {
                             showToast("cerita berhasil ditambahkan")
                             navigateToMainActivity()
                         }
-                        else -> {
+                        is StoryResult.Error -> {
                             showToast("gagal menambahkan cerita")
                             showLoading(false)
                         }
+                        else ->{showLoading(true)}
                     }
                 }
             }

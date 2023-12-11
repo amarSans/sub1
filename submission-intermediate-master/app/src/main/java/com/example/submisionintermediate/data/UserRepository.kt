@@ -11,7 +11,6 @@ import com.example.submisionintermediate.data.database.storyItem
 import com.example.submisionintermediate.data.pref.UserPreference
 import com.example.submisionintermediate.data.response.AddStoryResponse
 import com.example.submisionintermediate.data.response.AllStoryResponse
-import com.example.submisionintermediate.data.response.ListStoryItem
 import com.example.submisionintermediate.data.response.LoginResponse
 import com.example.submisionintermediate.data.response.RegisterResponse
 import com.example.submisionintermediate.data.retrofit.ApiService
@@ -56,7 +55,6 @@ class UserRepository private constructor(
     }
 
     suspend fun getStoryAll(token: String): AllStoryResponse {
-
         return apiService.getStoryAll("bearer $token",size=30)
     }
 

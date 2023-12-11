@@ -9,7 +9,6 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.submisionintermediate.data.UserRepository
 import com.example.submisionintermediate.data.database.storyItem
-import com.example.submisionintermediate.data.response.ListStoryItem
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
@@ -35,8 +34,10 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     fun getSession() {
         viewModelScope.launch {
-            userRepository.getToken().collect { session ->
-                _userSession.value = session
+            userRepository.getToken()?.let { token ->
+                userRepository.getToken().collect { session ->
+                    _userSession.value = session
+                }
             }
         }
     }
@@ -49,8 +50,8 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
 
 
-    private val _storyPagingData = MutableLiveData<PagingData<ListStoryItem>>()
-    val storyPagingData: LiveData<PagingData<ListStoryItem>> get() = _storyPagingData
+    private val _storyPagingData = MutableLiveData<PagingData<storyItem>>()
+    val storyPagingData: LiveData<PagingData<storyItem>> get() = _storyPagingData
 
     @ExperimentalPagingApi
     fun getPagingStories(token: String): LiveData<PagingData<storyItem>> {
